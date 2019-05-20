@@ -27,12 +27,30 @@ function addDogsToBar(dogs) {
 }
 
 function addDogInfo (dog) {
+    const buttonText = dog.isGoodDog ? 'Bad dog' : 'Good dog'
     dogInfo.innerHTML = `
-    <img src=${dog.image}/>
+    <img src=${dog.image}>
     <h2> ${dog.name} </h2>
+    <button> ${buttonText} </button>
     `
+    let dogButton = dogInfo.querySelector('button')
+    dogButton.addEventListener('click', (event) => {
+        fetch(`${url}/${dog.id}`, {
+            method: 'PATCH',
+            header: { 'Content-Type':'application/json'},
+            body: JSON.stringify({isGoodDog: !dog.isGoodDog})
+        }) 
+    })
 }
 
+function filterDogs(dogs, onlyGoodDogs = false) {
+    if (onlyGoodDogs) {
+      return dogs.filter(dog => dog.isGoodDog === true);
+    }
+    return dogs;
+}
+
+document
 
 function init () {
     fetchDogs(url)
