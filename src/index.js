@@ -1,6 +1,8 @@
 const URL = 'http://localhost:3000/pups';
 const dogBar = document.querySelector('#dog-bar');
 const dogInfo = document.querySelector('#dog-info');
+let dogs = [];
+let onlyGoodDogs = false;
 
 const api = (url, options = {}) => fetch(url, options)
   .then((resp) => {
@@ -32,16 +34,29 @@ const renderDogSpan = (dog) => {
   return spanEl;
 };
 
-const renderDogbar = (dogs) => {
+const renderDogbar = () => {
   dogBar.innerHTML = '';
-  dogs.forEach((dog) => {
+  const filteredDogs = onlyGoodDogs
+    ? dogs.filter(dog => dog.isGoodDog === true)
+    : dogs;
+
+  filteredDogs.forEach((dog) => {
     dogBar.appendChild(renderDogSpan(dog));
   });
 };
 
+const toggleDogFilter = () => {
+  onlyGoodDogs = !onlyGoodDogs;
+  const onOff = document.querySelector('#on-off');
+  onOff.innerText = onlyGoodDogs ? 'ON' : 'OFF';
+  renderDogbar();
+};
+
 function init() {
   api(URL)
+    .then((data) => { dogs = data; })
     .then(renderDogbar);
+  document.querySelector('#good-dog-filter').addEventListener('click', toggleDogFilter);
 }
 
 init();
