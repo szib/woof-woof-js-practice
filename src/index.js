@@ -12,6 +12,25 @@ const api = (url, options = {}) => fetch(url, options)
     return new Promise.reject(resp.json());
   });
 
+const toggleGoodDog = (dog) => {
+  const options = {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      isGoodDog: !dog.isGoodDog,
+    }),
+  };
+
+  api(`${URL}/${dog.id}`, options)
+    .then((json) => {
+      renderDogInfo(json);
+      dogs = dogs.map(dog => (dog.id === json.id ? json : dog));
+      renderDogbar();
+    });
+};
+
 const renderDogInfo = (dog) => {
   dogInfo.innerHTML = '';
 
@@ -22,6 +41,8 @@ const renderDogInfo = (dog) => {
   titleEl.innerText = dog.name;
   imgEl.src = dog.image;
   buttonEl.innerText = dog.isGoodDog ? 'Bad dog' : 'Good dog';
+
+  buttonEl.addEventListener('click', () => toggleGoodDog(dog));
 
   dogInfo.append(titleEl, imgEl, buttonEl);
 };
